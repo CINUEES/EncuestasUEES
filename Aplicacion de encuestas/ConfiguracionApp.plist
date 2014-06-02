@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>version_app</key>
+	<string>1.00.00</string>
+	<key>tipos_preguntas</key>
+	<array>
+		<string>Texto</string>
+		<string>Texto de párrafo</string>
+		<string>Tipo test</string>
+		<string>Casillas de verificación</string>
+		<string>Elegir de una lista</string>
+		<string>Tipo escala</string>
+		<string>Tabla</string>
+	</array>
+</dict>
+</plist>
