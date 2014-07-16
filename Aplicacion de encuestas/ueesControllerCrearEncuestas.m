@@ -12,26 +12,81 @@
 @interface ueesControllerCrearEncuestas ()
 {
     
-    //Variables de pregunta
-    NSMutableArray *datosPreguntas;
-    int num_preg;
-    int tipo_preg;
-    NSString *titulo_preg;
-    NSString *txt_ayuda_preg;
-    BOOL obliga_preg;
+    //Arrays que contienen los datos de las preguntas
     
-    //Variables de texto
-     NSMutableArray *datosTexto;//Array que contiene arrays que a su vez contiene las variables para cdada pregunta(numero, tipo, titulo, texto ayuda y si es obligatoria)
+    NSMutableArray *datosTexto;
+    //tipo_preg 0
+    //obligatorio 1
+    //titulo_preg 2
+    //texto_ayuda 3
     
-    //Variables de parrafo
-    NSArray *datosTextoParrafo;
+    NSMutableArray *datosTextoParrafo;
+    //tipo_preg 0
+    //obligatorio 1
+    //titulo_preg 2
+    //texto_ayuda 3
+    
+    NSMutableArray *datosTest;
+    //tipo_preg 0
+    //obligatorio 1
+    //titulo_preg 2
+    //texto_ayuda 3
+    //respuesta_1 4
+    //respuesta...
+    //respuesta_10 13
+    
+    NSMutableArray *datosCasillasVeri;
+    //tipo_preg 0
+    //obligatorio 1
+    //titulo_preg 2
+    //texto_ayuda 3
+    //respuesta_1 4
+    //respuesta...
+    //respuesta_10 13
+    
+    NSMutableArray *datosLista;
+    NSMutableArray *respuestas;
+    
+    //tipo_preg 0
+    
+    //obligatorio 1
+    //titulo_preg 2
+    //texto_ayuda 3
+    //respuestas 4
+    
+    
+    NSMutableArray *datosEscala;
+    //tipo_preg 0
+    //obligatorio 1
+    //titulo_preg 2
+    //texto_ayuda 3
+    //valor minimo 4
+    //valor maximo 5
+    //etiqueta minimo 6
+    //etiqueta maximo 7
+    
+    NSMutableArray *datosTabla;
+    //tipo_preg 0
+    //obligatorio 1
+    //titulo_preg 2
+    //texto_ayuda 3
+    //array filas 4 NSMUTABLEARRAY
+    //array columnas 5 NSMUTABLEARRAY
+    
+    NSMutableArray *array_filas;
+    //fila_1
+    //fila_2
+    NSMutableArray *array_colum;
+    //colum_1
+    //colum_2
+
     
     
     int tipo_pregunta;
     int contLista;
-    NSArray *tiposPregunta;
     UIView *actualView,*viewVacia;
-    NSMutableArray *views,*viewsTipo;
+    NSMutableArray *views;
+    //NSMutableArray *viewsTipo;
     //ultima fila lista
     //0=label,1=menos,2=textfield,3=mas,4=numFila
     NSMutableArray *ultimaFila;
@@ -56,31 +111,28 @@
 
 -(void)viewWillAppear:(BOOL)animated{
     
-    views=[[NSMutableArray alloc]init];
-    viewsTipo=[[NSMutableArray alloc]init];
-    self.viewInicial.tag=self.num_pregunta_enc;  
-    [views addObject:self.viewInicial];
-    id vistaCopia =[NSKeyedUnarchiver unarchiveObjectWithData:[NSKeyedArchiver archivedDataWithRootObject:self.viewInicial]];
-    viewVacia = (UIView *)vistaCopia;
+    //viewsTipo=[[NSMutableArray alloc]init];
+    //self.viewInicial.tag=self.num_pregunta_enc;
+    //[views addObject:self.viewInicial];
+    //id vistaCopia =[NSKeyedUnarchiver unarchiveObjectWithData:[NSKeyedArchiver archivedDataWithRootObject:self.viewInicial]];
+    //viewVacia = (UIView *)vistaCopia;
 }
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    datosPreguntas=[[NSMutableArray alloc]init];//se inicializa el array que contiene todas preguntas y sus datos
-    datosTexto=[[NSMutableArray alloc]init];//se inicializa el array que contiene todos los datos de "Texto"
+    views=[[NSMutableArray alloc]init];
+    self.preguntas_enc=[[NSMutableArray alloc]init];//se inicializa el array que contiene todas preguntas y sus datos
     NSString *path = [[NSBundle mainBundle] pathForResource: @"ConfiguracionApp" ofType: @"plist"];
     NSDictionary *dict = [NSDictionary dictionaryWithContentsOfFile: path];
-    self.tipos_preg_enc =[dict objectForKey: @"tipos_preguntas"];
+    self.tipos_preg_enc =[dict objectForKey: @"tipos_preguntas"];//se inicializa el array que contiene los tipos de pregunta para despues setearlos en el pickerView
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidShow:) name:UIKeyboardWillShowNotification object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHide:) name:UIKeyboardWillHideNotification object:nil];
-    tiposPregunta=self.tipos_preg_enc;
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidShow:) name:UIKeyboardWillShowNotification object:nil];//añade un observador cuando el teclado se muestra
+    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHide:) name:UIKeyboardWillHideNotification object:nil];//añade un observador cuando el teclado se esconde
+    
     self.navigationItem.title=self.titulo;
     self.view.backgroundColor=self.color;
     self.numPregLB.text=[NSString stringWithFormat:@"Pregunta %d",self.num_pregunta_enc];
-    self.num_pregunta_enc=1;
-    contLista=0;
 }
 
 - (void)didReceiveMemoryWarning
@@ -90,80 +142,135 @@
 }
 
 -(IBAction)tipoDePregunta:(id)sender{
-    switch ([self.tipoPregunta selectedRowInComponent:0]) {
+    UIView *view;//se crea el view que muestra la pregunta
+    tipo_pregunta=[self.tipoPregunta selectedRowInComponent:0];
+    NSLog(@"tipo pregunta %d",tipo_pregunta);
+    switch (tipo_pregunta) {
         case 0:
             {
-              [datosTexto addObject:[NSArray arrayWithObjects:self.num_pregunta_enc,, nil]]
-            id vistaCopia =[NSKeyedUnarchiver unarchiveObjectWithData:[NSKeyedArchiver archivedDataWithRootObject:self.viewTexto]];
-                if([[[views objectAtIndex:self.num_pregunta_enc-1]subviews]count]!=0){
-                    [[viewsTipo objectAtIndex:self.num_pregunta_enc-1]removeFromSuperview];
-                    [viewsTipo replaceObjectAtIndex:self.num_pregunta_enc-1 withObject:vistaCopia];
+                if ([views count]) {
+                    
+                    if ([views count]<self.num_pregunta_enc) {//si hay menos views que preguntas
+                    }
+                    else{
+                            NSLog(@"views count %d",[views count]);
+                            NSLog(@"num_preg_enc %d",self.num_pregunta_enc);
+                            [UIView beginAnimations:nil context:NULL];
+                            [UIView setAnimationDuration:0.8];
+                            [[views objectAtIndex:self.num_pregunta_enc-1]removeFromSuperview];//si ya existe una view en esa pregunta, se la remplaza por la nueva seleccion
+                            [UIView commitAnimations];
+                            
+                            [views removeObjectAtIndex:self.num_pregunta_enc-1];
+                    }
                 }
-                else{
-                    [viewsTipo addObject:vistaCopia];
-                }
+                
+                datosTexto=[[NSMutableArray alloc]init];//se crea el array que contiene los datos de la vista
+                NSNumber *tipoPreg=[NSNumber numberWithInt:0];
+                [datosTexto addObject:tipoPreg];//se añade el tipo de pregunta (0 texto)
+            id vistaCopia =[NSKeyedUnarchiver unarchiveObjectWithData:[NSKeyedArchiver archivedDataWithRootObject:self.viewTexto]];//se crea una nueva vista a partir de la vidta texto definida en el storyboard
+                view = (UIView *)vistaCopia;
+                view.frame = CGRectMake(view.frame.origin.x, 380, view.frame.size.width, view.frame.size.height );
+                [views insertObject:view atIndex:self.num_pregunta_enc-1];//se añade la vista en el array de vistas totales de la aplicación
+                
             }
+            
+            [[views objectAtIndex:self.num_pregunta_enc-1]layer].borderWidth=2.0f;
+            [[views objectAtIndex:self.num_pregunta_enc-1]layer].borderColor = [[UIColor lightGrayColor] CGColor];
+            [[views objectAtIndex:self.num_pregunta_enc-1]layer].cornerRadius = 8;
+            [self.view addSubview:[views objectAtIndex:self.num_pregunta_enc-1]];//se añade el view a la pantalla
             [UIView beginAnimations:nil context:NULL];
             [UIView setAnimationDuration:0.8];
-            [self reiniciarVistas];
-            [[viewsTipo objectAtIndex:self.num_pregunta_enc-1] setAlpha:1.0];
-            [[viewsTipo objectAtIndex:self.num_pregunta_enc-1]layer].borderWidth=2.0f;
-            [[viewsTipo objectAtIndex:self.num_pregunta_enc-1]layer].borderColor = [[UIColor lightGrayColor] CGColor];
-            [[viewsTipo objectAtIndex:self.num_pregunta_enc-1]layer].cornerRadius = 8;
-            [[views objectAtIndex:self.num_pregunta_enc-1]addSubview:[viewsTipo objectAtIndex:self.num_pregunta_enc-1]];
+            [[views objectAtIndex:self.num_pregunta_enc-1]setAlpha:1.0f];//se setea la transparencia en 1
             [UIView commitAnimations];
             break;
         case 1:
         {
-            id vistaCopia =[NSKeyedUnarchiver unarchiveObjectWithData:[NSKeyedArchiver archivedDataWithRootObject:self.viewTextoP]];
-            if([[[views objectAtIndex:self.num_pregunta_enc-1]subviews]count]!=0){
-                [[viewsTipo objectAtIndex:self.num_pregunta_enc-1]removeFromSuperview];
-                [viewsTipo replaceObjectAtIndex:self.num_pregunta_enc-1 withObject:vistaCopia];
+            if ([views count]) {
+                
+                if ([views count]<self.num_pregunta_enc) {//si hay menos views que preguntas
+                }
+                else{
+                    NSLog(@"views count %d",[views count]);
+                    NSLog(@"num_preg_enc %d",self.num_pregunta_enc);
+                    [UIView beginAnimations:nil context:NULL];
+                    [UIView setAnimationDuration:0.8];
+                    [[views objectAtIndex:self.num_pregunta_enc-1]removeFromSuperview];//si ya existe una view en esa pregunta, se la remplaza por la nueva seleccion
+                    [UIView commitAnimations];
+                    
+                    [views removeObjectAtIndex:self.num_pregunta_enc-1];
+                }
             }
-            else{
-                [viewsTipo addObject:vistaCopia];
+                datosTextoParrafo=[[NSMutableArray alloc]init];//se crea el array que contiene los datos de la vista
+                NSNumber *tipoPreg=[NSNumber numberWithInt:1];
+                [datosTextoParrafo addObject:tipoPreg];//se añade el tipo de pregunta (1 texto parrafo)
+                id vistaCopia =[NSKeyedUnarchiver unarchiveObjectWithData:[NSKeyedArchiver archivedDataWithRootObject:self.viewTextoP]];//se crea una nueva vista a partir de la vidta texto definida en el storyboard
+                view = (UIView *)vistaCopia;
+                view.frame = CGRectMake(view.frame.origin.x, 380, view.frame.size.width, view.frame.size.height );
+                [views insertObject:view atIndex:self.num_pregunta_enc-1];//se añade la vista en el array de vistas totales de la aplicación
+                
             }
-        }
+            
+            [[views objectAtIndex:self.num_pregunta_enc-1]layer].borderWidth=2.0f;
+            [[views objectAtIndex:self.num_pregunta_enc-1]layer].borderColor = [[UIColor lightGrayColor] CGColor];
+            [[views objectAtIndex:self.num_pregunta_enc-1]layer].cornerRadius = 8;
+            
+            [[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:5]layer].borderWidth=1.0f;
+            [[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:5]layer].borderColor = [[UIColor lightGrayColor] CGColor];
+            [[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:5]layer].cornerRadius = 8;
+            
+            [self.view addSubview:[views objectAtIndex:self.num_pregunta_enc-1]];//se añade el view a la pantalla
             [UIView beginAnimations:nil context:NULL];
             [UIView setAnimationDuration:0.8];
-            [self reiniciarVistas];
-            [[viewsTipo objectAtIndex:self.num_pregunta_enc-1] setAlpha:1.0];
-            [[viewsTipo objectAtIndex:self.num_pregunta_enc-1]layer].borderWidth=2.0f;
-            [[viewsTipo objectAtIndex:self.num_pregunta_enc-1]layer].borderColor = [[UIColor lightGrayColor] CGColor];
-            [[viewsTipo objectAtIndex:self.num_pregunta_enc-1]layer].cornerRadius = 8;
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:5]layer].borderWidth=0.5f;
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:5]layer].borderColor = [[UIColor lightGrayColor] CGColor];
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:5]layer].cornerRadius = 8;
-            [[views objectAtIndex:self.num_pregunta_enc-1]addSubview:[viewsTipo objectAtIndex:self.num_pregunta_enc-1]];
+            [[views objectAtIndex:self.num_pregunta_enc-1]setAlpha:1.0f];//se setea la transparencia en 1
+            
             [UIView commitAnimations];
             break;
         case 4:
         {
-            id vistaCopia =[NSKeyedUnarchiver unarchiveObjectWithData:[NSKeyedArchiver archivedDataWithRootObject:self.viewLista]];
-            if([[[views objectAtIndex:self.num_pregunta_enc-1]subviews]count]!=0){
-                [[viewsTipo objectAtIndex:self.num_pregunta_enc-1]removeFromSuperview];
-                [viewsTipo replaceObjectAtIndex:self.num_pregunta_enc-1 withObject:vistaCopia];
+            if ([views count]) {
+                
+                if ([views count]<self.num_pregunta_enc) {//si hay menos views que preguntas
+                }
+                else{
+                    NSLog(@"views count %d",[views count]);
+                    NSLog(@"num_preg_enc %d",self.num_pregunta_enc);
+                    [UIView beginAnimations:nil context:NULL];
+                    [UIView setAnimationDuration:0.8];
+                    [[views objectAtIndex:self.num_pregunta_enc-1]removeFromSuperview];//si ya existe una view en esa pregunta, se la remplaza por la nueva seleccion
+                    [UIView commitAnimations];
+                    
+                    [views removeObjectAtIndex:self.num_pregunta_enc-1];
+                }
             }
-            else{
-                [viewsTipo addObject:vistaCopia];
-            }
+            datosLista=[[NSMutableArray alloc]init];
+            [datosLista removeAllObjects];
+            //se crea el array que contiene los datos de la vista
+            NSNumber *tipoPreg=[NSNumber numberWithInt:4];
+            
+            [datosLista addObject:tipoPreg];//se añade el tipo de pregunta (4 Lista)
+            id vistaCopia =[NSKeyedUnarchiver unarchiveObjectWithData:[NSKeyedArchiver archivedDataWithRootObject:self.viewLista]];//se crea una nueva vista a partir de la vidta texto definida en el storyboard
+            view = (UIView *)vistaCopia;
+            view.frame = CGRectMake(view.frame.origin.x, 380, view.frame.size.width, view.frame.size.height );
+            [views insertObject:view atIndex:self.num_pregunta_enc-1];//se añade la vista en el array de vistas totales de la aplicación
+            [[views objectAtIndex:self.num_pregunta_enc-1]setTag:4];
+            
         }
+            [[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:8]addTarget:self action:@selector(aumentarRespuesta:) forControlEvents:UIControlEventTouchDown];
+            
+            respuestas=[[NSMutableArray alloc]init];
+            [respuestas removeAllObjects];
+            NSArray *respuesta=[[NSArray alloc]initWithObjects:@[[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:6],[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:7],[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:8],[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:9]], nil];
+            [respuestas addObject:respuesta];
+            
+            [self.view addSubview:[views objectAtIndex:self.num_pregunta_enc-1]];//se añade el view a la pantalla
             [UIView beginAnimations:nil context:NULL];
             [UIView setAnimationDuration:0.8];
-            [self reiniciarVistas];
-            [[viewsTipo objectAtIndex:self.num_pregunta_enc-1] setAlpha:1.0];
-            [[viewsTipo objectAtIndex:self.num_pregunta_enc-1]layer].borderWidth=2.0f;
-            [[viewsTipo objectAtIndex:self.num_pregunta_enc-1]layer].borderColor = [[UIColor lightGrayColor] CGColor];
-            [[viewsTipo objectAtIndex:self.num_pregunta_enc-1]layer].cornerRadius = 8;
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:29]setTag:1];
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:29]addTarget:self action:@selector(eliminarFila1) forControlEvents:UIControlEventTouchUpInside];
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:28]addTarget:self action:@selector(anadirRespuesta:) forControlEvents:UIControlEventTouchUpInside];
-            [[views objectAtIndex:self.num_pregunta_enc-1]addSubview:[viewsTipo objectAtIndex:self.num_pregunta_enc-1]];
-            ultimaFila=[[NSMutableArray alloc]initWithObjects:[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:4],[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:29],[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:7],[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:28],[NSNumber numberWithInt:1], nil];
+            [[views objectAtIndex:self.num_pregunta_enc-1]setAlpha:1.0f];//se setea la transparencia en 1
+            
             [UIView commitAnimations];
             break;
     }
-    if(self.num_pregunta_enc==[views count]){
+    if(self.num_pregunta_enc-1==[self.preguntas_enc count]){
         self.nuevoElemento.alpha=1.0f;
         self.finalizarEncuesta.alpha=1.0f;
     }
@@ -171,46 +278,290 @@
 }
 
 
-#pragma mark siguiente atras
+#pragma mark siguiente/atras
 
 -(IBAction)nuevaPregunta:(id)sender{
+    NSLog(@"/////Nueva pregunta/////");
     [UIView beginAnimations:nil context:NULL];
     [UIView setAnimationDuration:0.5];
-    [[views objectAtIndex:self.num_pregunta_enc-1]setAlpha:0.0];
-    self.num_pregunta_enc++;
-    id copyOfView =[NSKeyedUnarchiver unarchiveObjectWithData:[NSKeyedArchiver archivedDataWithRootObject:viewVacia]];
-    UIView *viewNuevaP = (UIView *)copyOfView;
-    viewNuevaP.tag=self.num_pregunta_enc;
-    viewNuevaP.alpha=1.0f;
-    [views addObject:viewNuevaP];
-    [self.view addSubview:viewNuevaP];
-    self.pregAnterior.alpha=1.0f;
-    self.numPregLB.text=[NSString stringWithFormat:@"Pregunta %d",self.num_pregunta_enc];
+    if ([views count]<self.num_pregunta_enc) {
+        UIAlertView *alerta=[[UIAlertView alloc]initWithTitle:@"Advertencia" message:@"Por favor, seleccione un tipo de pregunta" delegate:nil cancelButtonTitle:nil otherButtonTitles:@"Aceptar", nil];
+        [alerta show];
+    }
+    else{
+        if ([self.preguntas_enc count]+1==self.num_pregunta_enc) {
+            NSLog(@"pregunta nueva");
+            switch (tipo_pregunta) {
+                case 0:
+                    [datosTexto addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:6]];
+                    [datosTexto addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:1]];
+                    [datosTexto addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:2]];
+                    [self.preguntas_enc addObject:datosTexto];
+                    
+                    break;
+                case 1:
+                    [datosTextoParrafo addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:6]];
+                    [datosTextoParrafo addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:1]];
+                    [datosTextoParrafo addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:2]];
+                    [self.preguntas_enc addObject:datosTextoParrafo];
+                    break;
+                case 4:
+                    [datosLista addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:3]];
+                    [datosLista addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:4]];
+                    [datosLista addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:5]];
+                    [datosLista addObject:respuestas];
+                    [self.preguntas_enc addObject:datosLista];
+                    break;
+                    
+                default:
+                    break;
+            }
+        }
+        else{
+            NSLog(@"pregunta existente");
+            switch ([[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc-1]objectAtIndex:0]intValue]) {
+                    
+                case 0:
+                    NSLog(@"DATOS TEXTO");
+                    [datosTexto addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:6]];
+                    [datosTexto addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:1]];
+                    [datosTexto addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:2]];
+                    [self.preguntas_enc replaceObjectAtIndex:self.num_pregunta_enc-1 withObject:datosTexto];
+                    
+                    break;
+                case 1:
+                    NSLog(@"DATOS TEXTO PARRAFO");
+                    [datosTextoParrafo addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:6]];
+                    [datosTextoParrafo addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:1]];
+                    [datosTextoParrafo addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:2]];
+                    [self.preguntas_enc replaceObjectAtIndex:self.num_pregunta_enc-1 withObject:datosTextoParrafo];
+                    break;
+                case 4:
+                    NSLog(@"DATOS LISTA");
+                {
+                    NSNumber *tipo_pregg=[datosLista objectAtIndex:0];
+                    [datosLista removeAllObjects];
+                    [datosLista addObject:tipo_pregg];
+                }
+                    
+                    [datosLista addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:3]];
+                    [datosLista addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:4]];
+                    [datosLista addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:5]];
+                    [datosLista addObject:respuestas];
+                    [self.preguntas_enc replaceObjectAtIndex:self.num_pregunta_enc-1 withObject:datosLista];
+                    break;
+                    
+                default:
+                    break;
+            }
+
+        }
+        
+        
+        /*for (int i=0; i<[[self.preguntas_enc objectAtIndex:i]count]; i++) {
+            NSLog(@"Tipo de pregunta: %d",[[[self.preguntas_enc objectAtIndex:i]objectAtIndex:0]intValue]);
+            NSLog(@"Obligatorio: %ld",(long)[[[self.preguntas_enc objectAtIndex:i]objectAtIndex:1]selectedSegmentIndex]);
+        }*/
+        [[views objectAtIndex:self.num_pregunta_enc-1]setAlpha:0.0];
+        self.num_pregunta_enc++;
+        NSLog(@"numero de views: %d",[views count]);
+        NSLog(@"numero de preguntas: %d",[self.preguntas_enc count]);
+        NSLog(@"numero de pregunta: %d",self.num_pregunta_enc);
+        self.pregAnterior.alpha=1.0f;
+        self.numPregLB.text=[NSString stringWithFormat:@"Pregunta %d",self.num_pregunta_enc];
+    }
+   
     [UIView commitAnimations];
 }
 
 -(IBAction)siguientePregunta:(id)sender{
+    NSLog(@"/////Siguiente pregunta/////");
     [UIView beginAnimations:nil context:NULL];
     [UIView setAnimationDuration:0.5];
-    [[views objectAtIndex:self.num_pregunta_enc-1]setAlpha:0.0];
-    self.num_pregunta_enc++;
-    [[views objectAtIndex:self.num_pregunta_enc-1]setAlpha:1.0];
-    self.pregAnterior.alpha=1.0f;
-    if(self.num_pregunta_enc==[views count]){
-        self.pregSiguiente.alpha=0.0f;
-        self.nuevoElemento.alpha=1.0f;
+    switch ([[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc-1]objectAtIndex:0]intValue]) {
+            
+        case 0:
+            NSLog(@"DATOS TEXTO");
+            [datosTexto addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:6]];
+            [datosTexto addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:1]];
+            [datosTexto addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:2]];
+            [self.preguntas_enc replaceObjectAtIndex:self.num_pregunta_enc-1 withObject:datosTexto];
+            
+            break;
+        case 1:
+            NSLog(@"DATOS TEXTO PARRAFO");
+            [datosTextoParrafo addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:6]];
+            [datosTextoParrafo addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:1]];
+            [datosTextoParrafo addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:2]];
+            [self.preguntas_enc replaceObjectAtIndex:self.num_pregunta_enc-1 withObject:datosTextoParrafo];
+            break;
+        case 4:
+            NSLog(@"DATOS LISTA");
+        {
+            NSNumber *tipo_pregg=[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc-1]objectAtIndex:0];
+            [datosLista removeAllObjects];
+            [datosLista addObject:tipo_pregg];
+        }
+            [datosLista addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:3]];
+            [datosLista addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:4]];
+            [datosLista addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:5]];
+            [datosLista addObject:respuestas];
+            [self.preguntas_enc replaceObjectAtIndex:self.num_pregunta_enc-1 withObject:datosLista];
+            NSLog(@"count respuestas en array antes: %d",[[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc-1]objectAtIndex:4]count]);
+            NSLog(@"---descripcion preguntas index %d---%@",self.num_pregunta_enc-1,[self.preguntas_enc objectAtIndex:self.num_pregunta_enc-1]);
+            break;
+            
+        default:
+            break;
     }
+    [[views objectAtIndex:self.num_pregunta_enc-1]setAlpha:0.0];
+    self.pregAnterior.alpha=1.0f;
+    NSLog(@"numero de views: %d",[views count]);
+    NSLog(@"numero de preguntas: %d",[self.preguntas_enc count]);
+    NSLog(@"numero de pregunta: %d",self.num_pregunta_enc);
+    if (self.num_pregunta_enc==[views count]) {
+        NSLog(@"la siguiente no tiene  view");
+        if ([self.preguntas_enc count]==self.num_pregunta_enc) {
+            NSLog(@"es la ultima pregunta");
+            self.pregSiguiente.alpha=0.0f;
+            self.nuevoElemento.alpha=1.0f;
+        }
+    }
+    else{
+        NSLog(@"la siguiente si tiene  view");
+        
+        switch ([[views objectAtIndex:self.num_pregunta_enc]tag]) {
+            case 4:
+                [respuestas removeAllObjects];
+                NSLog(@"count respuestas en array despues: %d",[[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc-1]objectAtIndex:4]count]);
+                /*se esta vaciando el array respuestas almacenado en el nsmutablearray cuando se vacia el array respuestas normal, primera solucion hacer una copia del array respuesta, no referenciarlo*/
+                [respuestas addObjectsFromArray:[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc]objectAtIndex:4]];
+                NSLog(@"cont items respuestas: %d",[respuestas count]);
+                NSLog(@"cont items lista: %d",[[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc]objectAtIndex:4]count]);
+        }
+        
+        if ([self.preguntas_enc count]==self.num_pregunta_enc+1) {
+            NSLog(@"es la ultima pregunta");
+            self.pregSiguiente.alpha=0.0f;
+            self.nuevoElemento.alpha=1.0f;
+            
+        }
+        [[views objectAtIndex:self.num_pregunta_enc]setAlpha:1.0];
+    }
+    self.num_pregunta_enc++;
+
+            //self.pregSiguiente.alpha=0.0f;
+            //self.nuevoElemento.alpha=1.0f;
+
+    
     self.numPregLB.text=[NSString stringWithFormat:@"Pregunta %d",self.num_pregunta_enc];
     [UIView commitAnimations];
 }
 
 -(IBAction)preguntaAnterior:(id)sender{
+    NSLog(@"/////Nueva anterior/////");
     [UIView beginAnimations:nil context:NULL];
     [UIView setAnimationDuration:0.5];
-    [[views objectAtIndex:self.num_pregunta_enc-1]setAlpha:0.0];
+    if ([self.preguntas_enc count]+1==self.num_pregunta_enc) {
+        NSLog(@"pregunta final");
+        if (self.num_pregunta_enc>[views count]) {
+            NSLog(@"no tiene view");
+        }
+        else{
+            NSLog(@"si tiene view");
+            switch ([[views objectAtIndex:self.num_pregunta_enc-1]tag]) {
+                    
+                case 0:
+                    NSLog(@"DATOS TEXTO");
+                    [datosTexto addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:6]];
+                    [datosTexto addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:1]];
+                    [datosTexto addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:2]];
+                    [self.preguntas_enc addObject:datosTexto];
+                    
+                    break;
+                case 1:
+                    NSLog(@"DATOS TEXTO PARRAFO");
+                    [datosTextoParrafo addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:6]];
+                    [datosTextoParrafo addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:1]];
+                    [datosTextoParrafo addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:2]];
+                    [self.preguntas_enc addObject:datosTextoParrafo];
+                    break;
+                case 4:
+                    NSLog(@"DATOS LISTA");
+                    [datosLista addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:3]];
+                    [datosLista addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:4]];
+                    [datosLista addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:5]];
+                    [datosLista addObject:respuestas];
+                    [self.preguntas_enc addObject:datosLista];
+                    break;
+                    
+                default:
+                    break;
+            }
+            [[views objectAtIndex:self.num_pregunta_enc-1]setAlpha:0.0];
+        }
+        
+        
+    }
+    else{
+         NSLog(@"pregunta vieja");
+        switch ([[views objectAtIndex:self.num_pregunta_enc-1]tag]) {
+               
+            case 0:
+                NSLog(@"DATOS TEXTO");
+                [datosTexto addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:6]];
+                [datosTexto addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:1]];
+                [datosTexto addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:2]];
+                [self.preguntas_enc replaceObjectAtIndex:self.num_pregunta_enc-1 withObject:datosTexto];
+                
+                break;
+            case 1:
+                NSLog(@"DATOS TEXTO PARRAFO");
+                [datosTextoParrafo addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:6]];
+                [datosTextoParrafo addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:1]];
+                [datosTextoParrafo addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:2]];
+                [self.preguntas_enc replaceObjectAtIndex:self.num_pregunta_enc-1 withObject:datosTextoParrafo];// aqui esta el error
+                break;
+            case 4:
+                NSLog(@"DATOS LISTA");
+            {
+                NSNumber *tipo_pregg=[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc-1]objectAtIndex:0];
+                [datosLista removeAllObjects];
+                [datosLista addObject:tipo_pregg];
+            }
+                [datosLista addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:3]];
+                [datosLista addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:4]];
+                [datosLista addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:5]];
+                [datosLista addObject:respuestas];
+                [self.preguntas_enc replaceObjectAtIndex:self.num_pregunta_enc-1 withObject:datosLista];
+                break;
+                
+            default:
+                break;
+        }
+        [[views objectAtIndex:self.num_pregunta_enc-1]setAlpha:0.0];
+
+    }
+    
     self.pregSiguiente.alpha=1.0f;
     self.nuevoElemento.alpha=0.0f;
+     NSLog(@"cont items lista actual: %d",[[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc-1]objectAtIndex:4]count]);
     self.num_pregunta_enc--;
+    
+    NSLog(@"numero de views: %d",[views count]);
+    NSLog(@"numero de preguntas: %d",[self.preguntas_enc count]);
+    NSLog(@"numero de pregunta: %d",self.num_pregunta_enc);
+   
+    switch ([[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc-1]objectAtIndex:0]intValue]) {
+        case 4:
+            [respuestas removeAllObjects];
+            [respuestas addObjectsFromArray:[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc-1]objectAtIndex:4]];
+            NSLog(@"cont items respuestas: %d",[respuestas count]);
+            NSLog(@"cont items lista siguiente pregunta: %d",[[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc-1]objectAtIndex:4]count]);
+            break;
+    }
+    
+    
     [[views objectAtIndex:self.num_pregunta_enc-1]setAlpha:1.0];
     if(self.num_pregunta_enc==1){
          self.pregAnterior.alpha=0.0f;
@@ -221,429 +572,122 @@
 
 #pragma mark - Lista
 
-//darle tag a el primer case
--(IBAction)anadirRespuesta:(id)sender{
-    contLista++;
-    switch (contLista) {
-        case 1:
-            [UIView beginAnimations:nil context:NULL];
-            [UIView setAnimationDuration:0.8];
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:7]setAlpha:1.0f];
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:17]setAlpha:1.0f];
-        {
-            CGRect frame1 = [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:28]frame];
-            frame1.origin.y=frame1.origin.y+38;
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:28]setFrame:frame1];
-            UIButton *menos1=[UIButton buttonWithType:UIButtonTypeSystem];
-            menos1.titleLabel.text=@"-";
-            menos1.frame=[[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:29]frame];
-            menos1.tag=1;
-            CGRect frame2 = [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:29]frame];
-            frame2.origin.y=frame2.origin.y+38;
-            [[viewsTipo objectAtIndex:self.num_pregunta_enc-1]addSubview:menos1];
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:30]setFrame:frame2];
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:30]addTarget:self action:@selector(eliminarRespuesta:) forControlEvents:UIControlEventTouchUpInside];
-            
+
+#pragma mark Aumentar y/o eliminar respuestas
+
+-(void)aumentarRespuesta:(id)sender{
+    //if ([views count]==self.num_pregunta_enc) {
+        int posY=[[[[respuestas lastObject]objectAtIndex:0]objectAtIndex:0]frame].origin.y;
+        NSLog(@"posicion y: %d",posY);
+        NSLog(@"cont respuestas: %d",respuestas.count);
+        if (posY>=509) {
         }
-            [UIView commitAnimations];
-            break;
-        case 2:
+        else{
+            
             [UIView beginAnimations:nil context:NULL];
             [UIView setAnimationDuration:0.8];
-        {
-            CGRect frame0 = [[ultimaFila objectAtIndex:0]frame];//label
-            [(UILabel*)[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:18]setText:[NSString stringWithFormat:@"Respuesta %d: ",[[ultimaFila objectAtIndex:4]intValue]+1]];
-            frame0.origin.y=frame0.origin.y+38;
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:18]setFrame:frame0];
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:18]setAlpha:1.0f];
             
-            UIButton *button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-            [button setTitle:@"-" forState:UIControlStateNormal];
-            button.titleLabel.font = [UIFont systemFontOfSize:20.0f];
-            button.tag=2;
-            CGRect frame1 = [[ultimaFila objectAtIndex:1]frame];//signo menos
-            frame1.origin.y=frame1.origin.y+38;
-            [[viewsTipo objectAtIndex:self.num_pregunta_enc-1]addSubview:button];
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:30]setFrame:frame1];
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:30]setAlpha:1.0f];
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:30]addTarget:self action:@selector(eliminarRespuesta:) forControlEvents:UIControlEventTouchUpInside];
+            id copiaText =[NSKeyedUnarchiver unarchiveObjectWithData:[NSKeyedArchiver archivedDataWithRootObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:6]]];
+            UIView *textfield = (UIView *)copiaText;
+            textfield.frame = CGRectMake(textfield.frame.origin.x, posY+38, textfield.frame.size.width, textfield.frame.size.height);
+            id copiaLabel =[NSKeyedUnarchiver unarchiveObjectWithData:[NSKeyedArchiver archivedDataWithRootObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:7]]];
+            UILabel *label = (UILabel *)copiaLabel;
+            label.frame = CGRectMake(label.frame.origin.x, posY+38, label.frame.size.width, label.frame.size.height);
+            label.text=[NSString stringWithFormat:@"Respuesta %lu:",(unsigned long)respuestas.count+1];
+            [[[[respuestas objectAtIndex:0]lastObject]objectAtIndex:2]setFrame:CGRectMake([[[[respuestas objectAtIndex:0]objectAtIndex:0]objectAtIndex:2]frame].origin.x, [[[[respuestas objectAtIndex:0]objectAtIndex:0]objectAtIndex:2]frame].origin.y+38, [[[[respuestas objectAtIndex:0]objectAtIndex:0]objectAtIndex:2]frame].size.width, [[[[respuestas objectAtIndex:0]objectAtIndex:0]objectAtIndex:2]frame].size.height)];
+            id copiaMenos =[NSKeyedUnarchiver unarchiveObjectWithData:[NSKeyedArchiver archivedDataWithRootObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:9]]];
+            UIButton *menos = (UIButton *)copiaMenos;
+            menos.frame = CGRectMake(menos.frame.origin.x, posY+38, menos.frame.size.width, menos.frame.size.height);
+            menos.tag=respuestas.count;
+            [menos addTarget:self action:@selector(eliminarRespuesta:) forControlEvents:UIControlEventTouchDown];
             
-            CGRect frame2 = [[ultimaFila objectAtIndex:2]frame];//textfield
-            frame2.origin.y=frame2.origin.y+38;
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:8]setFrame:frame2];
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:8]setAlpha:1.0f];
+            NSArray *respuesta=[[NSArray alloc]initWithObjects:@[textfield,label,menos], nil];
+            [respuestas addObject:respuesta];
+            [[views objectAtIndex:self.num_pregunta_enc-1]addSubview:textfield];
+            [[views objectAtIndex:self.num_pregunta_enc-1]addSubview:label];
+            //[[views objectAtIndex:self.num_pregunta_enc-1]addSubview:mas];
+            [[views objectAtIndex:self.num_pregunta_enc-1]addSubview:menos];
             
-            CGRect frame3 = [[ultimaFila objectAtIndex:3]frame];//signo mas
-            frame3.origin.y=frame3.origin.y+38;
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:28]setFrame:frame3];
             
-            [ultimaFila replaceObjectAtIndex:0 withObject:[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:18]];
-            [ultimaFila replaceObjectAtIndex:1 withObject:[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:30]];
-            [ultimaFila replaceObjectAtIndex:2 withObject:[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:8]];
-            [ultimaFila replaceObjectAtIndex:3 withObject:[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:28]];
-            [ultimaFila replaceObjectAtIndex:4 withObject:[NSNumber numberWithInt:2]];
+            [UIView commitAnimations];
         }
-            [UIView commitAnimations];
-            break;
-       case 3:
-            [UIView beginAnimations:nil context:NULL];
-            [UIView setAnimationDuration:0.8];
-        {
-            CGRect frame0 = [[ultimaFila objectAtIndex:0]frame];//label
-            [(UILabel*)[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:19]setText:[NSString stringWithFormat:@"Respuesta %d: ",[[ultimaFila objectAtIndex:4]intValue]+1]];
-            frame0.origin.y=frame0.origin.y+38;
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:19]setFrame:frame0];
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:19]setAlpha:1.0f];
-            
-            UIButton *button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-            [button setTitle:@"-" forState:UIControlStateNormal];
-            button.titleLabel.font = [UIFont systemFontOfSize:20.0f];
-            button.tag=3;
-            CGRect frame1 = [[ultimaFila objectAtIndex:1]frame];//signo menos
-            frame1.origin.y=frame1.origin.y+38;
-            [[viewsTipo objectAtIndex:self.num_pregunta_enc-1]addSubview:button];
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:31]setFrame:frame1];
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:31]setAlpha:1.0f];
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:31]addTarget:self action:@selector(eliminarRespuesta:) forControlEvents:UIControlEventTouchUpInside];
-            
-            CGRect frame2 = [[ultimaFila objectAtIndex:2]frame];//textfield
-            frame2.origin.y=frame2.origin.y+38;
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:9]setFrame:frame2];
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:9]setAlpha:1.0f];
-            
-            CGRect frame3 = [[ultimaFila objectAtIndex:3]frame];//signo mas
-            frame3.origin.y=frame3.origin.y+38;
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:28]setFrame:frame3];
-            
-            [ultimaFila replaceObjectAtIndex:0 withObject:[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:19]];
-            [ultimaFila replaceObjectAtIndex:1 withObject:[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:31]];
-            [ultimaFila replaceObjectAtIndex:2 withObject:[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:9]];
-            [ultimaFila replaceObjectAtIndex:3 withObject:[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:28]];
-            [ultimaFila replaceObjectAtIndex:4 withObject:[NSNumber numberWithInt:3]];
+        
+        
+   // }
+    /*else{
+        NSLog(@"pasa x aqui 1");
+        int posY=[[[[[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc-1]objectAtIndex:4]lastObject]objectAtIndex:0]objectAtIndex:0]frame].origin.y;
+        NSLog(@"posicion y: %d",posY);
+        if (posY>=509) {
         }
-            [UIView commitAnimations];
-            break;
-        case 4:
+        else{
+            
             [UIView beginAnimations:nil context:NULL];
             [UIView setAnimationDuration:0.8];
-        {
-            CGRect frame0 = [[ultimaFila objectAtIndex:0]frame];//label
-            [(UILabel*)[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:20]setText:[NSString stringWithFormat:@"Respuesta %d: ",[[ultimaFila objectAtIndex:4]intValue]+1]];
-            frame0.origin.y=frame0.origin.y+38;
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:20]setFrame:frame0];
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:20]setAlpha:1.0f];
             
-            UIButton *button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-            [button setTitle:@"-" forState:UIControlStateNormal];
-            button.titleLabel.font = [UIFont systemFontOfSize:20.0f];
-            button.tag=4;
-            CGRect frame1 = [[ultimaFila objectAtIndex:1]frame];//signo menos
-            frame1.origin.y=frame1.origin.y+38;
-            [[viewsTipo objectAtIndex:self.num_pregunta_enc-1]addSubview:button];
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:32]setFrame:frame1];
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:32]setAlpha:1.0f];
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:32]addTarget:self action:@selector(eliminarRespuesta:) forControlEvents:UIControlEventTouchUpInside];
+            id copiaText =[NSKeyedUnarchiver unarchiveObjectWithData:[NSKeyedArchiver archivedDataWithRootObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:6]]];
+            UIView *textfield = (UIView *)copiaText;
+            textfield.frame = CGRectMake(textfield.frame.origin.x, posY+38, textfield.frame.size.width, textfield.frame.size.height);
+            id copiaLabel =[NSKeyedUnarchiver unarchiveObjectWithData:[NSKeyedArchiver archivedDataWithRootObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:7]]];
+            UILabel *label = (UILabel *)copiaLabel;
+            label.frame = CGRectMake(label.frame.origin.x, posY+38, label.frame.size.width, label.frame.size.height);
+            label.text=[NSString stringWithFormat:@"Respuesta %lu:",(unsigned long)[[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc-1]objectAtIndex:4]count]+1];
+            [[[[[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc-1]objectAtIndex:4]objectAtIndex:0]objectAtIndex:0]objectAtIndex:2]setFrame:CGRectMake([[[[[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc-1]objectAtIndex:4] objectAtIndex:0]objectAtIndex:0]objectAtIndex:2]frame].origin.x, [[[[[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc-1]objectAtIndex:4] objectAtIndex:0]objectAtIndex:0]objectAtIndex:2]frame].origin.y+38, [[[[[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc-1]objectAtIndex:4] objectAtIndex:0]objectAtIndex:0]objectAtIndex:2]frame].size.width, [[[[[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc-1]objectAtIndex:4] objectAtIndex:0]objectAtIndex:0]objectAtIndex:2]frame].size.height)];
+            id copiaMenos =[NSKeyedUnarchiver unarchiveObjectWithData:[NSKeyedArchiver archivedDataWithRootObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:9]]];
+            UIButton *menos = (UIButton *)copiaMenos;
+            menos.frame = CGRectMake(menos.frame.origin.x, posY+38, menos.frame.size.width, menos.frame.size.height);
+            menos.tag=[[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc-1]objectAtIndex:4]count];
+            [menos addTarget:self action:@selector(eliminarRespuesta:) forControlEvents:UIControlEventTouchDown];
             
-            CGRect frame2 = [[ultimaFila objectAtIndex:2]frame];//textfield
-            frame2.origin.y=frame2.origin.y+38;
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:10]setFrame:frame2];
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:10]setAlpha:1.0f];
+            NSArray *respuesta=[[NSArray alloc]initWithObjects:@[textfield,label,menos], nil];
+            [[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc-1]objectAtIndex:4] addObject:respuesta];
+            [[views objectAtIndex:self.num_pregunta_enc-1]addSubview:textfield];
+            [[views objectAtIndex:self.num_pregunta_enc-1]addSubview:label];
+            //[[views objectAtIndex:self.num_pregunta_enc-1]addSubview:mas];
+            [[views objectAtIndex:self.num_pregunta_enc-1]addSubview:menos];
             
-            CGRect frame3 = [[ultimaFila objectAtIndex:3]frame];//signo mas
-            frame3.origin.y=frame3.origin.y+38;
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:28]setFrame:frame3];
             
-            [ultimaFila replaceObjectAtIndex:0 withObject:[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:20]];
-            [ultimaFila replaceObjectAtIndex:1 withObject:[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:32]];
-            [ultimaFila replaceObjectAtIndex:2 withObject:[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:10]];
-            [ultimaFila replaceObjectAtIndex:3 withObject:[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:28]];
-            [ultimaFila replaceObjectAtIndex:4 withObject:[NSNumber numberWithInt:4]];
+            [UIView commitAnimations];
         }
-            [UIView commitAnimations];
-            break;
-        case 5:
-            [UIView beginAnimations:nil context:NULL];
-            [UIView setAnimationDuration:0.8];
-        {
-            CGRect frame0 = [[ultimaFila objectAtIndex:0]frame];//label
-            [(UILabel*)[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:21]setText:[NSString stringWithFormat:@"Respuesta %d: ",[[ultimaFila objectAtIndex:4]intValue]+1]];
-            frame0.origin.y=frame0.origin.y+38;
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:21]setFrame:frame0];
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:21]setAlpha:1.0f];
-            
-            UIButton *button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-            [button setTitle:@"-" forState:UIControlStateNormal];
-            button.titleLabel.font = [UIFont systemFontOfSize:20.0f];
-            button.tag=5;
-            CGRect frame1 = [[ultimaFila objectAtIndex:1]frame];//signo menos
-            frame1.origin.y=frame1.origin.y+38;
-            [[viewsTipo objectAtIndex:self.num_pregunta_enc-1]addSubview:button];
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:33]setFrame:frame1];
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:33]setAlpha:1.0f];
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:33]addTarget:self action:@selector(eliminarRespuesta:) forControlEvents:UIControlEventTouchUpInside];
-            
-            CGRect frame2 = [[ultimaFila objectAtIndex:2]frame];//textfield
-            frame2.origin.y=frame2.origin.y+38;
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:11]setFrame:frame2];
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:11]setAlpha:1.0f];
-            
-            CGRect frame3 = [[ultimaFila objectAtIndex:3]frame];//signo mas
-            frame3.origin.y=frame3.origin.y+38;
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:28]setFrame:frame3];
-            
-            [ultimaFila replaceObjectAtIndex:0 withObject:[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:21]];
-            [ultimaFila replaceObjectAtIndex:1 withObject:[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:33]];
-            [ultimaFila replaceObjectAtIndex:2 withObject:[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:11]];
-            [ultimaFila replaceObjectAtIndex:3 withObject:[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:28]];
-            [ultimaFila replaceObjectAtIndex:4 withObject:[NSNumber numberWithInt:5]];
-        }
-            [UIView commitAnimations];
-            break;
-        case 6:
-            [UIView beginAnimations:nil context:NULL];
-            [UIView setAnimationDuration:0.8];
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:12]setAlpha:1.0f];
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:22]setAlpha:1.0f];
-         {
-         CGRect frame1 = [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:28]frame];
-         frame1.origin.y=frame1.origin.y+38;
-         [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:28]setFrame:frame1];
-         UIButton *button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-         [button setTitle:@"-" forState:UIControlStateNormal];
-         button.titleLabel.font = [UIFont systemFontOfSize:20.0f];
-         CGRect frame2 = [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:33]frame];
-         frame2.origin.y=frame2.origin.y+38;
-         [[viewsTipo objectAtIndex:self.num_pregunta_enc-1]addSubview:button];
-         [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:34]setFrame:frame2];
-         }
-            [UIView commitAnimations];
-            break;
-        case 7:
-            [UIView beginAnimations:nil context:NULL];
-            [UIView setAnimationDuration:0.8];
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:13]setAlpha:1.0f];
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:23]setAlpha:1.0f];
-         {
-         CGRect frame1 = [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:28]frame];
-         frame1.origin.y=frame1.origin.y+38;
-         [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:28]setFrame:frame1];
-         UIButton *button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-         [button setTitle:@"-" forState:UIControlStateNormal];
-         button.titleLabel.font = [UIFont systemFontOfSize:20.0f];
-         CGRect frame2 = [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:34]frame];
-         frame2.origin.y=frame2.origin.y+38;
-         [[viewsTipo objectAtIndex:self.num_pregunta_enc-1]addSubview:button];
-         [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:35]setFrame:frame2];
-         }
-            [UIView commitAnimations];
-            break;
-        case 8:
-            [UIView beginAnimations:nil context:NULL];
-            [UIView setAnimationDuration:0.8];
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:14]setAlpha:1.0f];
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:24]setAlpha:1.0f];
-         {
-         CGRect frame1 = [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:28]frame];
-         frame1.origin.y=frame1.origin.y+38;
-         [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:28]setFrame:frame1];
-         UIButton *button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-         [button setTitle:@"-" forState:UIControlStateNormal];
-         button.titleLabel.font = [UIFont systemFontOfSize:20.0f];
-         CGRect frame2 = [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:35]frame];
-         frame2.origin.y=frame2.origin.y+38;
-         [[viewsTipo objectAtIndex:self.num_pregunta_enc-1]addSubview:button];
-         [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:36]setFrame:frame2];
-         }
-            [UIView commitAnimations];
-            break;
-        case 9:
-            [UIView beginAnimations:nil context:NULL];
-            [UIView setAnimationDuration:0.8];
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:15]setAlpha:1.0f];
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:25]setAlpha:1.0f];
-         {
-         CGRect frame1 = [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:28]frame];
-         frame1.origin.y=frame1.origin.y+38;
-         [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:28]setFrame:frame1];
-         UIButton *button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-         [button setTitle:@"-" forState:UIControlStateNormal];
-         button.titleLabel.font = [UIFont systemFontOfSize:20.0f];
-         CGRect frame2 = [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:36]frame];
-         frame2.origin.y=frame2.origin.y+38;
-         [[viewsTipo objectAtIndex:self.num_pregunta_enc-1]addSubview:button];
-         [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:37]setFrame:frame2];
-         }
-            [UIView commitAnimations];
-            break;
-        case 10:
-            [UIView beginAnimations:nil context:NULL];
-            [UIView setAnimationDuration:0.8];
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:16]setAlpha:1.0f];
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:26]setAlpha:1.0f];
-         {
-         CGRect frame1 = [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:28]frame];
-         frame1.origin.y=frame1.origin.y+38;
-         [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:28]setFrame:frame1];
-         UIButton *button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-         [button setTitle:@"-" forState:UIControlStateNormal];
-         button.titleLabel.font = [UIFont systemFontOfSize:20.0f];
-         CGRect frame2 = [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:37]frame];
-         frame2.origin.y=frame2.origin.y+38;
-         [[viewsTipo objectAtIndex:self.num_pregunta_enc-1]addSubview:button];
-         [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:38]setFrame:frame2];
-         }
-            [UIView commitAnimations];
-            break;
-        case 11:
-            [UIView beginAnimations:nil context:NULL];
-            [UIView setAnimationDuration:0.8];
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:17]setAlpha:1.0f];
-            [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:27]setAlpha:1.0f];
-         {
-         CGRect frame1 = [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:28]frame];
-         frame1.origin.y=frame1.origin.y+38;
-         [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:28]setFrame:frame1];
-         UIButton *button = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-         [button setTitle:@"-" forState:UIControlStateNormal];
-         button.titleLabel.font = [UIFont systemFontOfSize:20.0f];
-         CGRect frame2 = [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:38]frame];
-         frame2.origin.y=frame2.origin.y+38;
-         [[viewsTipo objectAtIndex:self.num_pregunta_enc-1]addSubview:button];
-         [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:39]setFrame:frame2];
-         }
-            [UIView commitAnimations];
-            break;
-            
-        default:
-            break;
+    }*/
+    
+}
+
+-(void)eliminarRespuesta:(id)sender{
+    int posY=[[[[respuestas lastObject]lastObject]objectAtIndex:0]frame].origin.y;
+    NSLog(@"posicion y: %d",posY);
+    if (posY<=167) {
+    }
+    else{
+        
+        
+        [UIView beginAnimations:nil context:NULL];
+        [UIView setAnimationDuration:0.8];
+        
+
+        NSLog(@"descripcion: %@",[[[[respuestas objectAtIndex:self.num_pregunta_enc-1]lastObject]objectAtIndex:0] description]);
+        [[[[respuestas lastObject]lastObject]objectAtIndex:0]removeFromSuperview];
+        [[[[respuestas lastObject]lastObject]objectAtIndex:1]removeFromSuperview];
+        [[[[respuestas lastObject]lastObject]objectAtIndex:2]removeFromSuperview];
+        [[[[respuestas objectAtIndex:0]objectAtIndex:0]objectAtIndex:2]setFrame:CGRectMake([[[[respuestas objectAtIndex:0]objectAtIndex:0]objectAtIndex:2]frame].origin.x, [[[[respuestas objectAtIndex:0]objectAtIndex:0]objectAtIndex:2]frame].origin.y-38, [[[[respuestas objectAtIndex:0]objectAtIndex:0]objectAtIndex:2]frame].size.width, [[[[respuestas objectAtIndex:0]objectAtIndex:0]objectAtIndex:2]frame].size.height)];
+        
+        [respuestas removeObjectAtIndex:[sender tag]];
+        
+        /*for (int i=0; i<respuestas.count; i++) {
+            <#statements#>
+        }*/
+        
+        
+        [UIView commitAnimations];
     }
 }
 
-
-//PENDIENTE 
--(IBAction)eliminarRespuesta:(id)sender{
-    NSLog(@"eliminar fila %ld",(long)[sender tag]);
-    switch ([sender tag]) {
-        case 1:
-            [self eliminarFila1];
-            break;
-        case 2:
-            [self eliminarFila2];
-            break;            
-    }
-}
-
--(void)eliminarFila1{
-    [UIView beginAnimations:nil context:NULL];
-    [UIView setAnimationDuration:0.8];
-    [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:7]setAlpha:0.0f];
-    [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:17]setAlpha:0.0f];
-    [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:29]setAlpha:0.0];
-    [self recorrerFilas:1 haciaArriba:2];
-    NSLog(@"contlista %d",contLista );
-}
-
-
--(void)eliminarFila2{
-    [UIView beginAnimations:nil context:NULL];
-    [UIView setAnimationDuration:0.8];
-    [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:8]setAlpha:0.0f];
-    [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:18]setAlpha:0.0f];
-    [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:30]setAlpha:0.0];
-    [self recorrerFilas:2 haciaArriba:2];
-}
-
-
-//revisar el contador de object 4
--(void)recorrerFilas:(int)filaEliminada haciaArriba:(int)filasDebajo{
-    [UIView beginAnimations:nil context:NULL];
-    [UIView setAnimationDuration:0.8];
-    {
-        for (int i=0; i<filasDebajo;i++) {
-            switch (filaEliminada) {
-                case 1:
-                {
-                    CGRect frame1;
-                    if(i==0){
-                        frame1 = [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:28]frame];//signo mas
-                        frame1.origin.y=frame1.origin.y-38;
-                        [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:28]setFrame:frame1];
-                    }
-                    frame1 = [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:18+i]frame];//label
-                    frame1.origin.y=frame1.origin.y-38;
-                    [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:18+i]setFrame:frame1];
-                    UILabel *label=[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:18+i];
-                    label.text=[NSString stringWithFormat:@"Respuesta %d: ",i+1];
-                    frame1 = [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:8+i]frame];//TEXTFIELD
-                    frame1.origin.y=frame1.origin.y-38;
-                    [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:8+i]setFrame:frame1];
-                    frame1 = [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:30+i]frame];//signo menos
-                    frame1.origin.y=frame1.origin.y-38;
-                    [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:30+i]setFrame:frame1];
-                    [[viewsTipo objectAtIndex:self.num_pregunta_enc-1]exchangeSubviewAtIndex:7+i withSubviewAtIndex:8+i];
-                    [[viewsTipo objectAtIndex:self.num_pregunta_enc-1]exchangeSubviewAtIndex:17+i withSubviewAtIndex:18+i];
-                    [[viewsTipo objectAtIndex:self.num_pregunta_enc-1]exchangeSubviewAtIndex:29+i withSubviewAtIndex:30+i];
-                    //[ultimaFila replaceObjectAtIndex:0 withObject:[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:18+i]];
-                    //[ultimaFila replaceObjectAtIndex:1 withObject:[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:30+1]];
-                    //[ultimaFila replaceObjectAtIndex:2 withObject:[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:11]];
-                    //[ultimaFila replaceObjectAtIndex:3 withObject:[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:28]];
-                    [ultimaFila replaceObjectAtIndex:4 withObject:[NSNumber numberWithInt:filaEliminada+filasDebajo]];
-                }
-                    break;
-                case 2:
-                {
-                    CGRect frame1;
-                    if(i==0){
-                        frame1 = [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:28]frame];//signo mas
-                        frame1.origin.y=frame1.origin.y-38;
-                        [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:28]setFrame:frame1];
-                    }
-                    frame1 = [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:19+i]frame];//label
-                    frame1.origin.y=frame1.origin.y-38;
-                    [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:19+i]setFrame:frame1];
-                    UILabel *label=[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:19+i];
-                    label.text=[NSString stringWithFormat:@"Respuesta %d: ",i+1];
-                    frame1 = [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:9+i]frame];//TEXTFIELD
-                    frame1.origin.y=frame1.origin.y-38;
-                    [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:9+i]setFrame:frame1];
-                    frame1 = [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:31+i]frame];//signo menos
-                    frame1.origin.y=frame1.origin.y-38;
-                    [[[[viewsTipo objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:31+i]setFrame:frame1];
-                    [[viewsTipo objectAtIndex:self.num_pregunta_enc-1]exchangeSubviewAtIndex:8+i withSubviewAtIndex:9+i];
-                    [[viewsTipo objectAtIndex:self.num_pregunta_enc-1]exchangeSubviewAtIndex:18+i withSubviewAtIndex:19+i];
-                    [[viewsTipo objectAtIndex:self.num_pregunta_enc-1]exchangeSubviewAtIndex:28+i withSubviewAtIndex:31+i];
-                    [ultimaFila replaceObjectAtIndex:4 withObject:[NSNumber numberWithInt:filaEliminada+filasDebajo]];
-                }
-                    break;
-            }
-            
-
-        }
-    }
-    [UIView commitAnimations];
-}
-
-
-#pragma mark picker View
-
--(NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component{
-    return self.tipos_preg_enc.count;
-}
-
-
--(NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component{
-    return [self.tipos_preg_enc objectAtIndex:row];
-}
-
-
--(NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView{
-    return 1;
-}
+/*
 
 
 
 -(void)reiniciarVistas{
-    
+ 
     //Reiniciar lista
     contLista=1;
     [self.viewTexto setAlpha:0.0];
@@ -671,6 +715,50 @@
     self.resp11L.alpha=0.0f;
     self.resp11LBL.alpha=0.0f;
 }
+
+*/
+
+
+#pragma mark picker View
+
+-(NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component{
+    return self.tipos_preg_enc.count;
+}
+
+
+-(NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component{
+    return [self.tipos_preg_enc objectAtIndex:row];
+}
+
+
+-(NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView{
+    return 1;
+}
+
+
+#pragma mark finalizar Encuesta
+
+-(IBAction)finalizarEncuesta:(id)sender{
+     UIAlertView *alerta=[[UIAlertView alloc]initWithTitle:@"Encuesta UEES" message:@"¿Está seguro que desea finalizar la encuesta?" delegate:self cancelButtonTitle:@"Cancelar" otherButtonTitles:@"OK", nil];
+    [alerta show];
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    NSString *title = [alertView buttonTitleAtIndex:buttonIndex];
+    
+    if([title isEqualToString:@"OK"])
+    {
+        [self.navigationController popToRootViewControllerAnimated:YES];
+        [[NSNotificationCenter defaultCenter]postNotificationName:@"EncuestaF" object:self];
+    }
+    else if([title isEqualToString:@"Cancelar"])
+    {
+        
+    }
+}
+/*
+#pragma mark - Notificaciones Keyboard
 
 - (void)keyboardDidShow:(NSNotification *)notification
 {
@@ -733,29 +821,6 @@
             }
         }
     }
-}
-
-
-#pragma mark finalizar Encuesta
-
--(IBAction)finalizarEncuesta:(id)sender{
-     UIAlertView *alerta=[[UIAlertView alloc]initWithTitle:@"Encuesta UEES" message:@"¿Está seguro que desea finalizar la encuesta?" delegate:self cancelButtonTitle:@"Cancelar" otherButtonTitles:@"OK", nil];
-    [alerta show];
-}
-
-- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
-{
-    NSString *title = [alertView buttonTitleAtIndex:buttonIndex];
-    
-    if([title isEqualToString:@"OK"])
-    {
-        [self.navigationController popToRootViewControllerAnimated:YES];
-        [[NSNotificationCenter defaultCenter]postNotificationName:@"EncuestaF" object:self];
-    }
-    else if([title isEqualToString:@"Cancelar"])
-    {
-        
-    }
-}
+}*/
 
 @end
