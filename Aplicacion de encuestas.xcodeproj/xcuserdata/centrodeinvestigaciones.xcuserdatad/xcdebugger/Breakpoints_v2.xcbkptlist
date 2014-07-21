@@ -26,11 +26,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Aplicacion de encuestas/ueesControllerCrearEncuestas.m"
-            timestampString = "427230510.083477"
+            timestampString = "427656327.35586"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "374"
-            endingLineNumber = "374"
+            startingLineNumber = "385"
+            endingLineNumber = "385"
             landmarkName = "-nuevaPregunta:"
             landmarkType = "5">
          </BreakpointContent>
@@ -42,11 +42,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Aplicacion de encuestas/ueesControllerCrearEncuestas.m"
-            timestampString = "427230510.083477"
+            timestampString = "427656327.35586"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "379"
-            endingLineNumber = "379"
+            startingLineNumber = "390"
+            endingLineNumber = "390"
             landmarkName = "-siguientePregunta:"
             landmarkType = "5">
          </BreakpointContent>
@@ -58,11 +58,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Aplicacion de encuestas/ueesControllerCrearEncuestas.m"
-            timestampString = "427243567.543514"
+            timestampString = "427670960.093467"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "457"
-            endingLineNumber = "457"
+            startingLineNumber = "475"
+            endingLineNumber = "475"
             landmarkName = "-siguientePregunta:"
             landmarkType = "5">
          </BreakpointContent>
@@ -74,11 +74,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Aplicacion de encuestas/ueesControllerCrearEncuestas.m"
-            timestampString = "427243567.543514"
+            timestampString = "427670960.093467"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "462"
-            endingLineNumber = "462"
+            startingLineNumber = "480"
+            endingLineNumber = "480"
             landmarkName = "-preguntaAnterior:"
             landmarkType = "5">
          </BreakpointContent>
@@ -90,11 +90,11 @@
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "Aplicacion de encuestas/ueesControllerCrearEncuestas.m"
-            timestampString = "427243567.543514"
+            timestampString = "427671035.778623"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "569"
-            endingLineNumber = "569"
+            startingLineNumber = "601"
+            endingLineNumber = "601"
             landmarkName = "-preguntaAnterior:"
             landmarkType = "5">
          </BreakpointContent>

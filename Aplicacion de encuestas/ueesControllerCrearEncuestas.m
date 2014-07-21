@@ -309,7 +309,13 @@
                     [datosLista addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:3]];
                     [datosLista addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:4]];
                     [datosLista addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:5]];
-                    [datosLista addObject:respuestas];
+                {
+                    NSMutableArray *respuestas_temp=[NSKeyedUnarchiver unarchiveObjectWithData:
+                                                     [NSKeyedArchiver archivedDataWithRootObject:respuestas]];
+                    [datosLista addObject:respuestas_temp];
+                }
+                    
+                    
                     [self.preguntas_enc addObject:datosLista];
                     break;
                     
@@ -347,7 +353,12 @@
                     [datosLista addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:3]];
                     [datosLista addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:4]];
                     [datosLista addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:5]];
-                    [datosLista addObject:respuestas];
+                    //[datosLista addObject:respuestas];
+                {
+                    NSMutableArray *respuestas_temp=[NSKeyedUnarchiver unarchiveObjectWithData:
+                                                     [NSKeyedArchiver archivedDataWithRootObject:respuestas]];
+                    [datosLista addObject:respuestas_temp];
+                }
                     [self.preguntas_enc replaceObjectAtIndex:self.num_pregunta_enc-1 withObject:datosLista];
                     break;
                     
@@ -405,9 +416,14 @@
             [datosLista addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:3]];
             [datosLista addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:4]];
             [datosLista addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:5]];
-            [datosLista addObject:respuestas];
+        {
+            NSMutableArray *respuestas_temp=[NSKeyedUnarchiver unarchiveObjectWithData:
+                                             [NSKeyedArchiver archivedDataWithRootObject:respuestas]];
+            [datosLista addObject:respuestas_temp];
+        }
+            //[datosLista addObject:respuestas];
             [self.preguntas_enc replaceObjectAtIndex:self.num_pregunta_enc-1 withObject:datosLista];
-            NSLog(@"count respuestas en array antes: %d",[[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc-1]objectAtIndex:4]count]);
+            
             NSLog(@"---descripcion preguntas index %d---%@",self.num_pregunta_enc-1,[self.preguntas_enc objectAtIndex:self.num_pregunta_enc-1]);
             break;
             
@@ -433,11 +449,13 @@
         switch ([[views objectAtIndex:self.num_pregunta_enc]tag]) {
             case 4:
                 [respuestas removeAllObjects];
-                NSLog(@"count respuestas en array despues: %d",[[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc-1]objectAtIndex:4]count]);
+                NSLog(@"count respuestas actual: %d",[[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc-1]objectAtIndex:4]count]);
+                NSLog(@"count respuestas siguiente pregunta: %d",[[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc]objectAtIndex:4]count]);
                 /*se esta vaciando el array respuestas almacenado en el nsmutablearray cuando se vacia el array respuestas normal, primera solucion hacer una copia del array respuesta, no referenciarlo*/
+                NSLog(@"cont items lista: %d",[[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc]objectAtIndex:4]count]);
                 [respuestas addObjectsFromArray:[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc]objectAtIndex:4]];
                 NSLog(@"cont items respuestas: %d",[respuestas count]);
-                NSLog(@"cont items lista: %d",[[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc]objectAtIndex:4]count]);
+                
         }
         
         if ([self.preguntas_enc count]==self.num_pregunta_enc+1) {
@@ -491,7 +509,12 @@
                     [datosLista addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:3]];
                     [datosLista addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:4]];
                     [datosLista addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:5]];
-                    [datosLista addObject:respuestas];
+                {
+                    NSMutableArray *respuestas_temp=[NSKeyedUnarchiver unarchiveObjectWithData:
+                                                     [NSKeyedArchiver archivedDataWithRootObject:respuestas]];
+                    [datosLista addObject:respuestas_temp];
+                }
+                    //[datosLista addObject:respuestas];
                     [self.preguntas_enc addObject:datosLista];
                     break;
                     
@@ -499,6 +522,7 @@
                     break;
             }
             [[views objectAtIndex:self.num_pregunta_enc-1]setAlpha:0.0];
+             NSLog(@"cont items lista actual: %d",[[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc-1]objectAtIndex:4]count]);
         }
         
         
@@ -532,7 +556,12 @@
                 [datosLista addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:3]];
                 [datosLista addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:4]];
                 [datosLista addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:5]];
-                [datosLista addObject:respuestas];
+            {
+                NSMutableArray *respuestas_temp=[NSKeyedUnarchiver unarchiveObjectWithData:
+                                                 [NSKeyedArchiver archivedDataWithRootObject:respuestas]];
+                [datosLista addObject:respuestas_temp];
+            }
+                //[datosLista addObject:respuestas];
                 [self.preguntas_enc replaceObjectAtIndex:self.num_pregunta_enc-1 withObject:datosLista];
                 break;
                 
@@ -540,12 +569,13 @@
                 break;
         }
         [[views objectAtIndex:self.num_pregunta_enc-1]setAlpha:0.0];
+         NSLog(@"cont items lista actual: %d",[[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc-1]objectAtIndex:4]count]);
 
     }
     
     self.pregSiguiente.alpha=1.0f;
     self.nuevoElemento.alpha=0.0f;
-     NSLog(@"cont items lista actual: %d",[[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc-1]objectAtIndex:4]count]);
+    
     self.num_pregunta_enc--;
     
     NSLog(@"numero de views: %d",[views count]);
@@ -555,6 +585,8 @@
     switch ([[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc-1]objectAtIndex:0]intValue]) {
         case 4:
             [respuestas removeAllObjects];
+            NSLog(@"count respuestas actual: %d",[[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc]objectAtIndex:4]count]);
+            NSLog(@"count respuestas siguiente pregunta: %d",[[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc-1]objectAtIndex:4]count]);
             [respuestas addObjectsFromArray:[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc-1]objectAtIndex:4]];
             NSLog(@"cont items respuestas: %d",[respuestas count]);
             NSLog(@"cont items lista siguiente pregunta: %d",[[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc-1]objectAtIndex:4]count]);
