@@ -313,10 +313,13 @@
                     NSMutableArray *respuestas_temp=[NSKeyedUnarchiver unarchiveObjectWithData:
                                                      [NSKeyedArchiver archivedDataWithRootObject:respuestas]];
                     [datosLista addObject:respuestas_temp];
+                    NSMutableArray *datosLista_temp=[NSKeyedUnarchiver unarchiveObjectWithData:
+                                                     [NSKeyedArchiver archivedDataWithRootObject:datosLista]];
+                    [self.preguntas_enc addObject:datosLista_temp];
                 }
                     
                     
-                    [self.preguntas_enc addObject:datosLista];
+                    
                     break;
                     
                 default:
@@ -358,8 +361,11 @@
                     NSMutableArray *respuestas_temp=[NSKeyedUnarchiver unarchiveObjectWithData:
                                                      [NSKeyedArchiver archivedDataWithRootObject:respuestas]];
                     [datosLista addObject:respuestas_temp];
+                    NSMutableArray *datosLista_temp=[NSKeyedUnarchiver unarchiveObjectWithData:
+                                                     [NSKeyedArchiver archivedDataWithRootObject:datosLista]];
+                    [self.preguntas_enc replaceObjectAtIndex:self.num_pregunta_enc-1 withObject:datosLista_temp];
                 }
-                    [self.preguntas_enc replaceObjectAtIndex:self.num_pregunta_enc-1 withObject:datosLista];
+                    
                     break;
                     
                 default:
@@ -420,11 +426,11 @@
             NSMutableArray *respuestas_temp=[NSKeyedUnarchiver unarchiveObjectWithData:
                                              [NSKeyedArchiver archivedDataWithRootObject:respuestas]];
             [datosLista addObject:respuestas_temp];
+            NSMutableArray *datosLista_temp=[NSKeyedUnarchiver unarchiveObjectWithData:
+                                             
+                                             [NSKeyedArchiver archivedDataWithRootObject:datosLista]];
+            [self.preguntas_enc replaceObjectAtIndex:self.num_pregunta_enc-1 withObject:datosLista_temp];
         }
-            //[datosLista addObject:respuestas];
-            [self.preguntas_enc replaceObjectAtIndex:self.num_pregunta_enc-1 withObject:datosLista];
-            
-            NSLog(@"---descripcion preguntas index %d---%@",self.num_pregunta_enc-1,[self.preguntas_enc objectAtIndex:self.num_pregunta_enc-1]);
             break;
             
         default:
@@ -451,7 +457,6 @@
                 [respuestas removeAllObjects];
                 NSLog(@"count respuestas actual: %d",[[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc-1]objectAtIndex:4]count]);
                 NSLog(@"count respuestas siguiente pregunta: %d",[[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc]objectAtIndex:4]count]);
-                /*se esta vaciando el array respuestas almacenado en el nsmutablearray cuando se vacia el array respuestas normal, primera solucion hacer una copia del array respuesta, no referenciarlo*/
                 NSLog(@"cont items lista: %d",[[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc]objectAtIndex:4]count]);
                 [respuestas addObjectsFromArray:[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc]objectAtIndex:4]];
                 NSLog(@"cont items respuestas: %d",[respuestas count]);
@@ -477,7 +482,7 @@
 }
 
 -(IBAction)preguntaAnterior:(id)sender{
-    NSLog(@"/////Nueva anterior/////");
+    NSLog(@"/////anterior/////");
     [UIView beginAnimations:nil context:NULL];
     [UIView setAnimationDuration:0.5];
     if ([self.preguntas_enc count]+1==self.num_pregunta_enc) {
@@ -513,9 +518,11 @@
                     NSMutableArray *respuestas_temp=[NSKeyedUnarchiver unarchiveObjectWithData:
                                                      [NSKeyedArchiver archivedDataWithRootObject:respuestas]];
                     [datosLista addObject:respuestas_temp];
+                    NSMutableArray *datosLista_temp=[NSKeyedUnarchiver unarchiveObjectWithData:
+                                                     [NSKeyedArchiver archivedDataWithRootObject:datosLista]];
+                    
+                    [self.preguntas_enc addObject:datosLista_temp];
                 }
-                    //[datosLista addObject:respuestas];
-                    [self.preguntas_enc addObject:datosLista];
                     break;
                     
                 default:
@@ -560,10 +567,10 @@
                 NSMutableArray *respuestas_temp=[NSKeyedUnarchiver unarchiveObjectWithData:
                                                  [NSKeyedArchiver archivedDataWithRootObject:respuestas]];
                 [datosLista addObject:respuestas_temp];
+                NSMutableArray *datosLista_temp=[NSKeyedUnarchiver unarchiveObjectWithData:
+                                                 [NSKeyedArchiver archivedDataWithRootObject:datosLista]];
+                [self.preguntas_enc replaceObjectAtIndex:self.num_pregunta_enc-1 withObject:datosLista_temp];
             }
-                //[datosLista addObject:respuestas];
-                [self.preguntas_enc replaceObjectAtIndex:self.num_pregunta_enc-1 withObject:datosLista];
-                break;
                 
             default:
                 break;

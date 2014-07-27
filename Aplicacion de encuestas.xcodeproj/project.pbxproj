@@ -165,7 +165,7 @@
 			children = (
 				238C213B1921672000C3E43C /* Configuracion */,
 				23B5EF2C1835460F0022D605 /* Clases */,
-				238482BD182C35760048CE61 /* Imágenes */,
+				238482BD182C35760048CE61 /* Imágenes */,
 				23848297182C2A470048CE61 /* ueesAppDelegate.h */,
 				23848298182C2A470048CE61 /* ueesAppDelegate.m */,
 				2384829A182C2A470048CE61 /* Main.storyboard */,
@@ -206,7 +206,7 @@
 			name = "Supporting Files";
 			sourceTree = "<group>";
 		};
-		238482BD182C35760048CE61 /* Imágenes */ = {
+		238482BD182C35760048CE61 /* Imágenes */ = {
 			isa = PBXGroup;
 			children = (
 			);
@@ -280,7 +280,7 @@
 				ORGANIZATIONNAME = "Centro de Investigaciones";
 				TargetAttributes = {
 					23848284182C2A460048CE61 = {
-						DevelopmentTeam = 4RQC6K9X2K;
+						DevelopmentTeam = 64HL3XTCN7;
 					};
 					238482A5182C2A470048CE61 = {
 						TestTargetID = 23848284182C2A460048CE61;
