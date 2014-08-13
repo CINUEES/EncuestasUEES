@@ -664,15 +664,68 @@
         [UIView beginAnimations:nil context:NULL];
         [UIView setAnimationDuration:0.5];
         
-        [[[[respuestas objectAtIndex:[sender tag]]lastObject]objectAtIndex:0]removeFromSuperview];
-        [[[[respuestas objectAtIndex:[sender tag]]lastObject]objectAtIndex:1]removeFromSuperview];
-        [[[[respuestas objectAtIndex:[sender tag]]lastObject]objectAtIndex:2]removeFromSuperview];
+        //[[[[respuestas objectAtIndex:[sender tag]]lastObject]objectAtIndex:0]removeFromSuperview];
+        //[[[[respuestas objectAtIndex:[sender tag]]lastObject]objectAtIndex:1]removeFromSuperview];
+        //[[[[respuestas objectAtIndex:[sender tag]]lastObject]objectAtIndex:2]removeFromSuperview];
+        switch ([sender tag]) {
+            case 1:
+                [[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:[sender tag]+9]removeFromSuperview];
+                [[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:[sender tag]+9]removeFromSuperview];
+                [[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:[sender tag]+9]removeFromSuperview];
+                break;
+            case 2:
+                [[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:[sender tag]+11]removeFromSuperview];
+                [[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:[sender tag]+11]removeFromSuperview];
+                [[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:[sender tag]+11]removeFromSuperview];
+                break;
+            case 3:
+                [[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:[sender tag]+13]removeFromSuperview];
+                [[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:[sender tag]+13]removeFromSuperview];
+                [[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:[sender tag]+13]removeFromSuperview];
+                break;
+            case 4:
+                [[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:[sender tag]+15]removeFromSuperview];
+                [[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:[sender tag]+15]removeFromSuperview];
+                [[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:[sender tag]+15]removeFromSuperview];
+                break;
+            case 5:
+                [[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:[sender tag]+17]removeFromSuperview];
+                [[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:[sender tag]+17]removeFromSuperview];
+                [[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:[sender tag]+17]removeFromSuperview];
+                break;
+            case 6:
+                [[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:[sender tag]+19]removeFromSuperview];
+                [[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:[sender tag]+19]removeFromSuperview];
+                [[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:[sender tag]+19]removeFromSuperview];
+                break;
+            case 7:
+                [[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:[sender tag]+21]removeFromSuperview];
+                [[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:[sender tag]+21]removeFromSuperview];
+                [[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:[sender tag]+21]removeFromSuperview];
+                break;
+            case 8:
+                [[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:[sender tag]+23]removeFromSuperview];
+                [[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:[sender tag]+23]removeFromSuperview];
+                [[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:[sender tag]+23]removeFromSuperview];
+                break;
+            case 9:
+                [[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:[sender tag]+25]removeFromSuperview];
+                [[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:[sender tag]+25]removeFromSuperview];
+                [[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:[sender tag]+25]removeFromSuperview];
+                break;
+            case 10:
+                [[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:[sender tag]+27]removeFromSuperview];
+                [[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:[sender tag]+27]removeFromSuperview];
+                [[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:[sender tag]+27]removeFromSuperview];
+                break;
+                
+            default:
+                break;
+        }
         [respuestas removeObjectAtIndex:[sender tag]];
         
-        //[respuestas removeObjectAtIndex:[sender tag]];
         NSLog(@"respuestas count:%d",respuestas.count);
         for (int i=[sender tag]; i<respuestas.count; i++) {
-            //NSLog(@"i: %d",i);
         CGRect frameElemento=[[[[respuestas objectAtIndex:i]lastObject]objectAtIndex:0]frame];
             [[[[respuestas objectAtIndex:i]lastObject]objectAtIndex:0]setFrame:CGRectMake(frameElemento.origin.x, frameElemento.origin.y-38, frameElemento.size.width, frameElemento.size.height)];
         
@@ -682,14 +735,12 @@
         CGRect frameElemento_2=[[[[respuestas objectAtIndex:i]lastObject]objectAtIndex:2]frame];
         [[[[respuestas objectAtIndex:i]lastObject]objectAtIndex:2]setFrame:CGRectMake(frameElemento_2.origin.x, frameElemento_2.origin.y-38, frameElemento_2.size.width, frameElemento_2.size.height)];
         [[[[respuestas objectAtIndex:i]lastObject]objectAtIndex:2]setTag:i];
-            //[respuestas replaceObjectAtIndex:[sender tag] withObject:[respuestas objectAtIndex:[sender tag]+1]];
-        
         }
         
-        //ya vale eliminar la fila y se recorre SOLO la fila inmediata de abajo, faltan subir las demas
-        
-        
         [UIView commitAnimations];
+        
+        
+        //ya se eliminan correctamente las respuestas en cada pregunta, falta hacer la animación que se corran las demás respuestas hacia arriba en las preguntas que se modifican, en la actual si valen. Se sugiere que se uso [views] en vez de [respuestas]  como arriba
     }
 }
 
