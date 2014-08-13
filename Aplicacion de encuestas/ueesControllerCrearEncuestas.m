@@ -127,8 +127,8 @@
     NSDictionary *dict = [NSDictionary dictionaryWithContentsOfFile: path];
     self.tipos_preg_enc =[dict objectForKey: @"tipos_preguntas"];//se inicializa el array que contiene los tipos de pregunta para despues setearlos en el pickerView
     
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidShow:) name:UIKeyboardWillShowNotification object:nil];//añade un observador cuando el teclado se muestra
-    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHide:) name:UIKeyboardWillHideNotification object:nil];//añade un observador cuando el teclado se esconde
+    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidShow:) name:UIKeyboardWillShowNotification object:nil];//añade un observador cuando el teclado se muestra
+    //[[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(keyboardDidHide:) name:UIKeyboardWillHideNotification object:nil];//añade un observador cuando el teclado se esconde
     
     self.navigationItem.title=self.titulo;
     self.view.backgroundColor=self.color;
@@ -229,7 +229,7 @@
         {
             if ([views count]) {
                 
-                if ([views count]<self.num_pregunta_enc) {//si hay menos views que preguntas
+                if ([views count]<self.num_pregunta_enc) {//si hay menos views que preguntas no hace nada ya que es una pregunta nueva
                 }
                 else{
                     NSLog(@"views count %d",[views count]);
@@ -252,15 +252,16 @@
             view = (UIView *)vistaCopia;
             view.frame = CGRectMake(view.frame.origin.x, 380, view.frame.size.width, view.frame.size.height );
             [views insertObject:view atIndex:self.num_pregunta_enc-1];//se añade la vista en el array de vistas totales de la aplicación
-            [[views objectAtIndex:self.num_pregunta_enc-1]setTag:4];
+            [[views objectAtIndex:self.num_pregunta_enc-1]setTag:4];//se añade el tipo de pregunta como tag al view
             
         }
             [[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:8]addTarget:self action:@selector(aumentarRespuesta:) forControlEvents:UIControlEventTouchDown];
             
-            respuestas=[[NSMutableArray alloc]init];
+            respuestas=[[NSMutableArray alloc]init];//se crea el array respuestas que contiene todos los views respuesta de la lista actual
             [respuestas removeAllObjects];
-            NSArray *respuesta=[[NSArray alloc]initWithObjects:@[[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:6],[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:7],[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:8],[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:9]], nil];
-            [respuestas addObject:respuesta];
+            [[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:9]addTarget:self action:@selector(eliminarRespuesta:) forControlEvents:UIControlEventTouchDown];
+            NSArray *respuesta=[[NSArray alloc]initWithObjects:@[[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:6],[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:7],[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:8],[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:9]], nil];//se crea un array que contiene los views de una fila de respuestas
+            [respuestas addObject:respuesta];// se añade la primera fila a las respuestas
             
             [self.view addSubview:[views objectAtIndex:self.num_pregunta_enc-1]];//se añade el view a la pantalla
             [UIView beginAnimations:nil context:NULL];
@@ -306,19 +307,17 @@
                     [self.preguntas_enc addObject:datosTextoParrafo];
                     break;
                 case 4:
-                    [datosLista addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:3]];
-                    [datosLista addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:4]];
-                    [datosLista addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:5]];
+                    [datosLista addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:3]];//se añade el boleean obligatorio
+                    [datosLista addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:4]];//se añade el titulo de la pregunta
+                    [datosLista addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:5]];//se añade el texto de ayuda de la pregunta
                 {
                     NSMutableArray *respuestas_temp=[NSKeyedUnarchiver unarchiveObjectWithData:
-                                                     [NSKeyedArchiver archivedDataWithRootObject:respuestas]];
-                    [datosLista addObject:respuestas_temp];
+                                                     [NSKeyedArchiver archivedDataWithRootObject:respuestas]];//se copia el array respuestas
+                    [datosLista addObject:respuestas_temp];//se añade la copia del array respuestas al array datosLista
                     NSMutableArray *datosLista_temp=[NSKeyedUnarchiver unarchiveObjectWithData:
-                                                     [NSKeyedArchiver archivedDataWithRootObject:datosLista]];
-                    [self.preguntas_enc addObject:datosLista_temp];
+                                                     [NSKeyedArchiver archivedDataWithRootObject:datosLista]];//se copia el array datosLista
+                    [self.preguntas_enc addObject:datosLista_temp];//se añade la copia del array respuestas al array preguntas
                 }
-                    
-                    
                     
                     break;
                     
@@ -359,11 +358,11 @@
                     //[datosLista addObject:respuestas];
                 {
                     NSMutableArray *respuestas_temp=[NSKeyedUnarchiver unarchiveObjectWithData:
-                                                     [NSKeyedArchiver archivedDataWithRootObject:respuestas]];
-                    [datosLista addObject:respuestas_temp];
+                                                     [NSKeyedArchiver archivedDataWithRootObject:respuestas]];//se copia el array respuestas
+                    [datosLista addObject:respuestas_temp];//se añade la copia del array respuestas al array datosLista
                     NSMutableArray *datosLista_temp=[NSKeyedUnarchiver unarchiveObjectWithData:
-                                                     [NSKeyedArchiver archivedDataWithRootObject:datosLista]];
-                    [self.preguntas_enc replaceObjectAtIndex:self.num_pregunta_enc-1 withObject:datosLista_temp];
+                                                     [NSKeyedArchiver archivedDataWithRootObject:datosLista]];//se copia el array datosLista
+                    [self.preguntas_enc replaceObjectAtIndex:self.num_pregunta_enc-1 withObject:datosLista_temp];//se remplaza el array existente con los datos de la pregunta por la copia del array datosLista
                 }
                     
                     break;
@@ -424,13 +423,13 @@
             [datosLista addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:5]];
         {
             NSMutableArray *respuestas_temp=[NSKeyedUnarchiver unarchiveObjectWithData:
-                                             [NSKeyedArchiver archivedDataWithRootObject:respuestas]];
-            [datosLista addObject:respuestas_temp];
+                                             [NSKeyedArchiver archivedDataWithRootObject:respuestas]];//se copia el array respuestas
+            [datosLista addObject:respuestas_temp];//se añade la copia del array respuestas al array datosLista
             NSMutableArray *datosLista_temp=[NSKeyedUnarchiver unarchiveObjectWithData:
-                                             
-                                             [NSKeyedArchiver archivedDataWithRootObject:datosLista]];
-            [self.preguntas_enc replaceObjectAtIndex:self.num_pregunta_enc-1 withObject:datosLista_temp];
+                                             [NSKeyedArchiver archivedDataWithRootObject:datosLista]];//se copia el array datosLista
+            [self.preguntas_enc replaceObjectAtIndex:self.num_pregunta_enc-1 withObject:datosLista_temp];//se remplaza el array existente con los datos de la pregunta por la copia del array datosLista
         }
+
             break;
             
         default:
@@ -516,13 +515,13 @@
                     [datosLista addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:5]];
                 {
                     NSMutableArray *respuestas_temp=[NSKeyedUnarchiver unarchiveObjectWithData:
-                                                     [NSKeyedArchiver archivedDataWithRootObject:respuestas]];
-                    [datosLista addObject:respuestas_temp];
+                                                     [NSKeyedArchiver archivedDataWithRootObject:respuestas]];//se copia el array respuestas
+                    [datosLista addObject:respuestas_temp];//se añade la copia del array respuestas al array datosLista
                     NSMutableArray *datosLista_temp=[NSKeyedUnarchiver unarchiveObjectWithData:
-                                                     [NSKeyedArchiver archivedDataWithRootObject:datosLista]];
-                    
-                    [self.preguntas_enc addObject:datosLista_temp];
+                                                     [NSKeyedArchiver archivedDataWithRootObject:datosLista]];//se copia el array datosLista
+                    [self.preguntas_enc addObject:datosLista_temp];//se añade la copia del array respuestas al array preguntas
                 }
+
                     break;
                     
                 default:
@@ -565,11 +564,11 @@
                 [datosLista addObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:5]];
             {
                 NSMutableArray *respuestas_temp=[NSKeyedUnarchiver unarchiveObjectWithData:
-                                                 [NSKeyedArchiver archivedDataWithRootObject:respuestas]];
-                [datosLista addObject:respuestas_temp];
+                                                  [NSKeyedArchiver archivedDataWithRootObject:respuestas]];//se copia el array respuestas
+                [datosLista addObject:respuestas_temp];//se añade la copia del array respuestas al array datosLista
                 NSMutableArray *datosLista_temp=[NSKeyedUnarchiver unarchiveObjectWithData:
-                                                 [NSKeyedArchiver archivedDataWithRootObject:datosLista]];
-                [self.preguntas_enc replaceObjectAtIndex:self.num_pregunta_enc-1 withObject:datosLista_temp];
+                                                 [NSKeyedArchiver archivedDataWithRootObject:datosLista]];//se copia el array datosLista
+                [self.preguntas_enc replaceObjectAtIndex:self.num_pregunta_enc-1 withObject:datosLista_temp];//se remplaza el array existente con los datos de la pregunta por la copia del array datosLista
             }
                 
             default:
@@ -618,13 +617,13 @@
     //if ([views count]==self.num_pregunta_enc) {
         int posY=[[[[respuestas lastObject]objectAtIndex:0]objectAtIndex:0]frame].origin.y;
         NSLog(@"posicion y: %d",posY);
-        NSLog(@"cont respuestas: %d",respuestas.count);
+    
         if (posY>=509) {
         }
         else{
             
             [UIView beginAnimations:nil context:NULL];
-            [UIView setAnimationDuration:0.8];
+            [UIView setAnimationDuration:0.5];
             
             id copiaText =[NSKeyedUnarchiver unarchiveObjectWithData:[NSKeyedArchiver archivedDataWithRootObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:6]]];
             UIView *textfield = (UIView *)copiaText;
@@ -633,7 +632,7 @@
             UILabel *label = (UILabel *)copiaLabel;
             label.frame = CGRectMake(label.frame.origin.x, posY+38, label.frame.size.width, label.frame.size.height);
             label.text=[NSString stringWithFormat:@"Respuesta %lu:",(unsigned long)respuestas.count+1];
-            [[[[respuestas objectAtIndex:0]lastObject]objectAtIndex:2]setFrame:CGRectMake([[[[respuestas objectAtIndex:0]objectAtIndex:0]objectAtIndex:2]frame].origin.x, [[[[respuestas objectAtIndex:0]objectAtIndex:0]objectAtIndex:2]frame].origin.y+38, [[[[respuestas objectAtIndex:0]objectAtIndex:0]objectAtIndex:2]frame].size.width, [[[[respuestas objectAtIndex:0]objectAtIndex:0]objectAtIndex:2]frame].size.height)];
+            //[[[[respuestas objectAtIndex:0]lastObject]objectAtIndex:2]setFrame:CGRectMake([[[[respuestas objectAtIndex:0]objectAtIndex:0]objectAtIndex:2]frame].origin.x, [[[[respuestas objectAtIndex:0]objectAtIndex:0]objectAtIndex:2]frame].origin.y+38, [[[[respuestas objectAtIndex:0]objectAtIndex:0]objectAtIndex:2]frame].size.width, [[[[respuestas objectAtIndex:0]objectAtIndex:0]objectAtIndex:2]frame].size.height)];
             id copiaMenos =[NSKeyedUnarchiver unarchiveObjectWithData:[NSKeyedArchiver archivedDataWithRootObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:9]]];
             UIButton *menos = (UIButton *)copiaMenos;
             menos.frame = CGRectMake(menos.frame.origin.x, posY+38, menos.frame.size.width, menos.frame.size.height);
@@ -644,77 +643,50 @@
             [respuestas addObject:respuesta];
             [[views objectAtIndex:self.num_pregunta_enc-1]addSubview:textfield];
             [[views objectAtIndex:self.num_pregunta_enc-1]addSubview:label];
-            //[[views objectAtIndex:self.num_pregunta_enc-1]addSubview:mas];
             [[views objectAtIndex:self.num_pregunta_enc-1]addSubview:menos];
             
             
             [UIView commitAnimations];
         }
-        
-        
-   // }
-    /*else{
-        NSLog(@"pasa x aqui 1");
-        int posY=[[[[[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc-1]objectAtIndex:4]lastObject]objectAtIndex:0]objectAtIndex:0]frame].origin.y;
-        NSLog(@"posicion y: %d",posY);
-        if (posY>=509) {
-        }
-        else{
-            
-            [UIView beginAnimations:nil context:NULL];
-            [UIView setAnimationDuration:0.8];
-            
-            id copiaText =[NSKeyedUnarchiver unarchiveObjectWithData:[NSKeyedArchiver archivedDataWithRootObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:6]]];
-            UIView *textfield = (UIView *)copiaText;
-            textfield.frame = CGRectMake(textfield.frame.origin.x, posY+38, textfield.frame.size.width, textfield.frame.size.height);
-            id copiaLabel =[NSKeyedUnarchiver unarchiveObjectWithData:[NSKeyedArchiver archivedDataWithRootObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:7]]];
-            UILabel *label = (UILabel *)copiaLabel;
-            label.frame = CGRectMake(label.frame.origin.x, posY+38, label.frame.size.width, label.frame.size.height);
-            label.text=[NSString stringWithFormat:@"Respuesta %lu:",(unsigned long)[[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc-1]objectAtIndex:4]count]+1];
-            [[[[[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc-1]objectAtIndex:4]objectAtIndex:0]objectAtIndex:0]objectAtIndex:2]setFrame:CGRectMake([[[[[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc-1]objectAtIndex:4] objectAtIndex:0]objectAtIndex:0]objectAtIndex:2]frame].origin.x, [[[[[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc-1]objectAtIndex:4] objectAtIndex:0]objectAtIndex:0]objectAtIndex:2]frame].origin.y+38, [[[[[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc-1]objectAtIndex:4] objectAtIndex:0]objectAtIndex:0]objectAtIndex:2]frame].size.width, [[[[[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc-1]objectAtIndex:4] objectAtIndex:0]objectAtIndex:0]objectAtIndex:2]frame].size.height)];
-            id copiaMenos =[NSKeyedUnarchiver unarchiveObjectWithData:[NSKeyedArchiver archivedDataWithRootObject:[[[views objectAtIndex:self.num_pregunta_enc-1]subviews]objectAtIndex:9]]];
-            UIButton *menos = (UIButton *)copiaMenos;
-            menos.frame = CGRectMake(menos.frame.origin.x, posY+38, menos.frame.size.width, menos.frame.size.height);
-            menos.tag=[[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc-1]objectAtIndex:4]count];
-            [menos addTarget:self action:@selector(eliminarRespuesta:) forControlEvents:UIControlEventTouchDown];
-            
-            NSArray *respuesta=[[NSArray alloc]initWithObjects:@[textfield,label,menos], nil];
-            [[[self.preguntas_enc objectAtIndex:self.num_pregunta_enc-1]objectAtIndex:4] addObject:respuesta];
-            [[views objectAtIndex:self.num_pregunta_enc-1]addSubview:textfield];
-            [[views objectAtIndex:self.num_pregunta_enc-1]addSubview:label];
-            //[[views objectAtIndex:self.num_pregunta_enc-1]addSubview:mas];
-            [[views objectAtIndex:self.num_pregunta_enc-1]addSubview:menos];
-            
-            
-            [UIView commitAnimations];
-        }
-    }*/
+    NSLog(@"cont respuestas: %d",respuestas.count);
     
 }
 
 -(void)eliminarRespuesta:(id)sender{
     int posY=[[[[respuestas lastObject]lastObject]objectAtIndex:0]frame].origin.y;
     NSLog(@"posicion y: %d",posY);
+    NSLog(@"tag boton menos: %d",[sender tag]);
     if (posY<=167) {
     }
     else{
         
         
         [UIView beginAnimations:nil context:NULL];
-        [UIView setAnimationDuration:0.8];
+        [UIView setAnimationDuration:0.5];
         
-
-        NSLog(@"descripcion: %@",[[[[respuestas objectAtIndex:self.num_pregunta_enc-1]lastObject]objectAtIndex:0] description]);
-        [[[[respuestas lastObject]lastObject]objectAtIndex:0]removeFromSuperview];
-        [[[[respuestas lastObject]lastObject]objectAtIndex:1]removeFromSuperview];
-        [[[[respuestas lastObject]lastObject]objectAtIndex:2]removeFromSuperview];
-        [[[[respuestas objectAtIndex:0]objectAtIndex:0]objectAtIndex:2]setFrame:CGRectMake([[[[respuestas objectAtIndex:0]objectAtIndex:0]objectAtIndex:2]frame].origin.x, [[[[respuestas objectAtIndex:0]objectAtIndex:0]objectAtIndex:2]frame].origin.y-38, [[[[respuestas objectAtIndex:0]objectAtIndex:0]objectAtIndex:2]frame].size.width, [[[[respuestas objectAtIndex:0]objectAtIndex:0]objectAtIndex:2]frame].size.height)];
-        
+        [[[[respuestas objectAtIndex:[sender tag]]lastObject]objectAtIndex:0]removeFromSuperview];
+        [[[[respuestas objectAtIndex:[sender tag]]lastObject]objectAtIndex:1]removeFromSuperview];
+        [[[[respuestas objectAtIndex:[sender tag]]lastObject]objectAtIndex:2]removeFromSuperview];
         [respuestas removeObjectAtIndex:[sender tag]];
         
-        /*for (int i=0; i<respuestas.count; i++) {
-            <#statements#>
-        }*/
+        //[respuestas removeObjectAtIndex:[sender tag]];
+        NSLog(@"respuestas count:%d",respuestas.count);
+        for (int i=[sender tag]; i<respuestas.count; i++) {
+            //NSLog(@"i: %d",i);
+        CGRect frameElemento=[[[[respuestas objectAtIndex:i]lastObject]objectAtIndex:0]frame];
+            [[[[respuestas objectAtIndex:i]lastObject]objectAtIndex:0]setFrame:CGRectMake(frameElemento.origin.x, frameElemento.origin.y-38, frameElemento.size.width, frameElemento.size.height)];
+        
+        CGRect frameElemento_1=[[[[respuestas objectAtIndex:i]lastObject]objectAtIndex:1]frame];
+        [[[[respuestas objectAtIndex:i]lastObject]objectAtIndex:1]setFrame:CGRectMake(frameElemento_1.origin.x, frameElemento_1.origin.y-38, frameElemento_1.size.width, frameElemento_1.size.height)];
+        
+        CGRect frameElemento_2=[[[[respuestas objectAtIndex:i]lastObject]objectAtIndex:2]frame];
+        [[[[respuestas objectAtIndex:i]lastObject]objectAtIndex:2]setFrame:CGRectMake(frameElemento_2.origin.x, frameElemento_2.origin.y-38, frameElemento_2.size.width, frameElemento_2.size.height)];
+        [[[[respuestas objectAtIndex:i]lastObject]objectAtIndex:2]setTag:i];
+            //[respuestas replaceObjectAtIndex:[sender tag] withObject:[respuestas objectAtIndex:[sender tag]+1]];
+        
+        }
+        
+        //ya vale eliminar la fila y se recorre SOLO la fila inmediata de abajo, faltan subir las demas
         
         
         [UIView commitAnimations];

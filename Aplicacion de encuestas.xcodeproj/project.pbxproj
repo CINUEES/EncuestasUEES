@@ -280,7 +280,7 @@
 				ORGANIZATIONNAME = "Centro de Investigaciones";
 				TargetAttributes = {
 					23848284182C2A460048CE61 = {
-						DevelopmentTeam = 64HL3XTCN7;
+						DevelopmentTeam = 4RQC6K9X2K;
 					};
 					238482A5182C2A470048CE61 = {
 						TestTargetID = 23848284182C2A460048CE61;
